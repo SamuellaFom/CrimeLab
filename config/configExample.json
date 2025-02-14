@@ -1,0 +1,11 @@
+{
+  "mongo": {
+    "uri": "",
+    "dbName": ""
+  },
+  "neo4j": {
+    "uri": "",
+    "username": "",
+    "password": ""
+  }
+}
