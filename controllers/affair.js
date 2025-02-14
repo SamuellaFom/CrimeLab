@@ -1,6 +1,10 @@
 const ID = require("nodejs-unique-numeric-id-generator");
 const connectMongo = require("../config/database");
-const db = await connectMongo();
+
+let db;
+(async () => {
+  db = await connectMongo.connectMongo();
+})();
 
 async function createAffairs(req, res) {
   try {
