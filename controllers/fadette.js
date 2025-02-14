@@ -23,7 +23,7 @@ async function createFadette(req, res) {
     } catch (err) {
       console.error("Error running Neo4j query for item", currentItem, err);
     }
-    res.status(200).json({ success: true, message: "Add a new affair" });
+    res.status(200).json({ success: true, message: "Add a new fadette" });
   } catch (error) {
     console.log(error);
 
