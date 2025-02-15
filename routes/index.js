@@ -18,7 +18,7 @@ router.delete("/delete/affair/:affairNumber", affairController.deleteByAffairNum
 // router individual
 router.post("/create/individual", individualController.createIndividuals);
 router.get("/allIndividuals", individualController.getAllIndividuals);
-router.get("getIndividual/:individualNumber", individualController.getByIndividualNumber);
+router.get("/getIndividual/:individualNumber", individualController.getByIndividualNumber);
 router.put("/update/individual/:individualNumber", individualController.updateIndividual);
 router.delete("/delete/individual/:individualNumber", individualController.deleteByIndividualNumber);
 

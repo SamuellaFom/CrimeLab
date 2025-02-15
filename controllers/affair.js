@@ -1,5 +1,6 @@
 const ID = require("nodejs-unique-numeric-id-generator");
 const connectMongo = require("../config/database");
+const { connectNeo4j } = require("../config/database");
 
 let db;
 (async () => {
@@ -10,6 +11,7 @@ async function createAffairs(req, res) {
   try {
     const uniqueId = ID.generate(new Date().toJSON());
 
+
     await db.collection("affairs").insertOne({
       affairNumber: uniqueId,
       title: req.body.title,
@@ -17,6 +19,26 @@ async function createAffairs(req, res) {
       statut: req.body.statut,
       placeNumber: req.body.placeNumber,
     });
+
+
+    const session = await connectNeo4j();
+
+    await session.run(
+        `
+      MERGE (a:Affair {affairNumber: $affairNumber, title: $title, description: $description, statut: $statut})
+      MERGE (p:Place {placeNumber: $placeNumber})
+      MERGE (a)-[:OCCURRED_AT]->(p)
+      `,
+        {
+          affairNumber: uniqueId,
+          title: req.body.title,
+          description: req.body.description,
+          statut: req.body.statut,
+          placeNumber: req.body.placeNumber,
+        }
+    );
+
+
 
     res.status(200).json({ success: true, message: "Added a new affair" });
   } catch (error) {
@@ -65,7 +87,7 @@ async function getAllAffairs(req, res) {
 async function getByTitle(req, res) {
   try {
     const collection = db.collection("affairs");
-    const query = await collection.find({ title: req.params.title }).toArray(); 
+    const query = await collection.find({ title: req.params.title }).toArray();
 
     if (query.length === 0) {
       res.status(404).json({
@@ -88,7 +110,7 @@ async function getByTitle(req, res) {
 async function getByAffairNumber(req, res) {
   try {
     const collection = db.collection("affairs");
-    const query = await collection.find({ affairNumber: req.params.affairNumber }).toArray(); 
+    const query = await collection.find({ affairNumber: req.params.affairNumber }).toArray();
 
     if (query.length === 0) {
       res.status(404).json({
@@ -108,10 +130,10 @@ async function getByAffairNumber(req, res) {
   }
 }
 
-async function updateAffair(req, res) {  
+async function updateAffair(req, res) {
   try {
     const collection = db.collection("affairs");
-    const search = await collection.find({ affairNumber: req.params.affairNumber }).toArray(); 
+    const search = await collection.find({ affairNumber: req.params.affairNumber }).toArray();
 
     if (search.length === 0) {
       res.status(404).json({
@@ -120,15 +142,15 @@ async function updateAffair(req, res) {
       });
     } else {
       await collection.updateOne(
-        { affairNumber: req.params.affairNumber },
-        {
-          $set: {
-            title: req.body.title,
-            description: req.body.description,
-            statut: req.body.statut,
-            placeNumber: req.body.placeNumber,
-          },
-        }
+          { affairNumber: req.params.affairNumber },
+          {
+            $set: {
+              title: req.body.title,
+              description: req.body.description,
+              statut: req.body.statut,
+              placeNumber: req.body.placeNumber,
+            },
+          }
       );
 
       res.status(200).json({ success: true, message: "Updated the affair" });
@@ -168,6 +190,6 @@ module.exports = {
   getAllAffairs,
   getByTitle,
   getByAffairNumber,
-  updateAffair,  
+  updateAffair,
   deleteByAffairNumber,
 };
