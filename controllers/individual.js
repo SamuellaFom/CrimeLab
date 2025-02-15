@@ -18,74 +18,57 @@ async function createIndividuals(req, res) {
       phone: req.body.phone,
     });
 
-    res.status(200).json({ success: true, message: "Add a new individual" });
+    res.status(200).json({ success: true, message: "Added a new individual" });
   } catch (error) {
     console.log(error);
-
-    res
-      .status(500)
-      .json({ success: false, message: `Error present when adding: ${error}` });
+    res.status(500).json({ success: false, message: `Error occurred while adding: ${error}` });
   }
 }
 
 async function getAllIndividuals(req, res) {
   try {
-    // TODO: add relations
     const collection = db.collection("individuals"); 
-    const query = await collection.find();
-    res
-      .status(200)
-      .json({ success: true, message: "all individuals", data: query });
+    const query = await collection.find().toArray();  
+
+    res.status(200).json({ success: true, message: "All individuals", data: query });
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when getting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while getting individuals: ${error}` });
   }
 }
 
 async function getByIndividualNumber(req, res) {
   try {
-    // TODO: add relations
     const collection = db.collection("individuals"); 
-    const query = await collection.find({
-      individualNumber: req.params.individualNumber,
-    });
-    if (query === null) {
+    const query = await collection.find({ individualNumber: req.params.individualNumber }).toArray();  
+
+    if (query.length === 0) {
       res.status(404).json({
         success: false,
-        message: `individual ${req.params.individualNumber} not found`,
+        message: `Individual ${req.params.individualNumber} not found`,
       });
     } else {
       res.status(200).json({
         success: true,
-        message: `individual ${req.params.individualNumber} recovers`,
+        message: `Individual ${req.params.individualNumber} found`,
         data: query,
       });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when getting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while getting individual: ${error}` });
   }
 }
 
-async function upadeteIndividual(req, res) {
+async function updateIndividual(req, res) {  
   try {
     const collection = db.collection("individuals"); 
-    const search = await collection.find({
-      individualNumber: req.params.individualNumber,
-    });
+    const search = await collection.find({ individualNumber: req.params.individualNumber }).toArray();  
 
-    if (search === null) {
+    if (search.length === 0) {
       res.status(404).json({
         success: false,
-        message: `individual ${req.params.individualNumber} not found`,
+        message: `Individual ${req.params.individualNumber} not found`,
       });
     } else {
       await collection.updateOne(
@@ -100,47 +83,35 @@ async function upadeteIndividual(req, res) {
         }
       );
 
-      res.status(200).json({ success: true, message: "update an individual" });
+      res.status(200).json({ success: true, message: "Updated the individual" });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when updating: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while updating individual: ${error}` });
   }
 }
 
 async function deleteByIndividualNumber(req, res) {
   try {
     const collection = db.collection("individuals"); 
-    const search = await collection.find({
-      individualNumber: req.params.individualNumber,
-    });
+    const search = await collection.find({ individualNumber: req.params.individualNumber }).toArray();  
 
-    if (search === null) {
+    if (search.length === 0) {
       res.status(404).json({
         success: false,
-        message: `individual ${req.params.individualNumber} not found`,
+        message: `Individual ${req.params.individualNumber} not found`,
       });
     } else {
-      const query = await collection.deleteOne({
-        individualNumber: req.params.individualNumber,
-      });
+      const query = await collection.deleteOne({ individualNumber: req.params.individualNumber });
       res.status(200).json({
         success: true,
-        message: `individual ${req.params.individualNumber} recovers`,
+        message: `Individual ${req.params.individualNumber} deleted`,
         data: query,
       });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when deleting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while deleting individual: ${error}` });
   }
 }
 
@@ -148,6 +119,6 @@ module.exports = {
   createIndividuals,
   getAllIndividuals,
   getByIndividualNumber,
-  upadeteIndividual,
+  updateIndividual, 
   deleteByIndividualNumber,
 };

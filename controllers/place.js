@@ -17,100 +17,77 @@ async function createPlaces(req, res) {
       kind: req.body.kind,
     });
 
-    res.status(200).json({ success: true, message: "Add a new place" });
+    res.status(200).json({ success: true, message: "Added a new place" });
   } catch (error) {
     console.log(error);
-
-    res
-      .status(500)
-      .json({ success: false, message: `Error present when adding: ${error}` });
+    res.status(500).json({ success: false, message: `Error occurred while adding: ${error}` });
   }
 }
 
 async function getAllPlaces(req, res) {
   try {
-    // TODO: add relations
     const collection = db.collection("places"); 
-    const query = await collection.find();
-    res.status(200).json({ success: true, message: "all places", data: query });
+    const query = await collection.find().toArray(); 
+
+    res.status(200).json({ success: true, message: "All places", data: query });
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when getting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while getting places: ${error}` });
   }
 }
 
 async function getByAddress(req, res) {
   try {
-    // TODO: add relations
-    const collection = db.collection("places"); 
-    const query = await collections.find({ address: req.body.address });
+    const collection = db.collection("places");
+    const query = await collection.find({ address: req.body.address }).toArray(); 
 
-    if (query === null) {
-      res.status(404).json({
-        success: false,
-        message: `place ${req.params.address} not found`,
-      });
+    if (query.length === 0) {
+      res.status(404).json({ success: false, message: `Place with address ${req.body.address} not found` });
     } else {
       res.status(200).json({
         success: true,
-        message: `place ${req.params.address} recovers`,
+        message: `Place with address ${req.body.address} found`,
         data: query,
       });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when getting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while getting place: ${error}` });
   }
 }
 
 async function getByPlaceNumber(req, res) {
   try {
-    // TODO: add relations
-    const collection = db.collection("places"); 
-    const query = await collection.find({
-      placeNumber: req.params.placeNumber,
-    });
-    if (query === null) {
+    const collection = db.collection("places");
+    const query = await collection.find({ placeNumber: req.params.placeNumber }).toArray();  
+
+    if (query.length === 0) {
       res.status(404).json({
         success: false,
-        message: `place ${req.params.placeNumber} not found`,
+        message: `Place with placeNumber ${req.params.placeNumber} not found`,
       });
     } else {
       res.status(200).json({
         success: true,
-        message: `place ${req.params.placeNumber} recovers`,
+        message: `Place with placeNumber ${req.params.placeNumber} found`,
         data: query,
       });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when getting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while getting place: ${error}` });
   }
 }
 
-async function upadetePlace(req, res) {
+async function updatePlace(req, res) {  
   try {
-    const collection = db.collection("places"); 
-    const search = await collection.find({
-      placeNumber: req.params.placeNumber,
-    });
+    const collection = db.collection("places");
+    const search = await collection.find({ placeNumber: req.params.placeNumber }).toArray(); 
 
-    if (search === null) {
+    if (search.length === 0) {
       res.status(404).json({
         success: false,
-        message: `place ${req.params.placeNumber} not found`,
+        message: `Place with placeNumber ${req.params.placeNumber} not found`,
       });
     } else {
       await collection.updateOne(
@@ -124,47 +101,35 @@ async function upadetePlace(req, res) {
         }
       );
 
-      res.status(200).json({ success: true, message: "update an place" });
+      res.status(200).json({ success: true, message: "Updated the place" });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when updating: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while updating place: ${error}` });
   }
 }
 
 async function deleteByPlaceNumber(req, res) {
   try {
-    const collection = db.collection("places"); 
-    const search = await collection.find({
-      placeNumber: req.params.placeNumber,
-    });
+    const collection = db.collection("places");
+    const search = await collection.find({ placeNumber: req.params.placeNumber }).toArray(); 
 
-    if (search === null) {
+    if (search.length === 0) {
       res.status(404).json({
         success: false,
-        message: `place ${req.params.placeNumber} not found`,
+        message: `Place with placeNumber ${req.params.placeNumber} not found`,
       });
     } else {
-      const query = await collection.deleteOne({
-        placeNumber: req.params.placeNumber,
-      });
+      const query = await collection.deleteOne({ placeNumber: req.params.placeNumber });
       res.status(200).json({
         success: true,
-        message: `place ${req.params.placeNumber} recovers`,
+        message: `Place with placeNumber ${req.params.placeNumber} deleted`,
         data: query,
       });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when deleting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while deleting place: ${error}` });
   }
 }
 
@@ -173,6 +138,6 @@ module.exports = {
   getAllPlaces,
   getByAddress,
   getByPlaceNumber,
-  upadetePlace,
+  updatePlace, 
   deleteByPlaceNumber,
 };

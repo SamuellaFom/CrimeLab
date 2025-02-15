@@ -15,78 +15,60 @@ async function createTestimonials(req, res) {
       date: req.body.date,
       content: req.body.content,
       individualNumber: req.body.individualNumber,
-      affairNumber: req.body.affairNumber
+      affairNumber: req.body.affairNumber,
     });
 
-    res.status(200).json({ success: true, message: "Add a new testimony" });
+    res.status(200).json({ success: true, message: "Added a new testimony" });
   } catch (error) {
     console.log(error);
-
-    res
-      .status(500)
-      .json({ success: false, message: `Error present when adding: ${error}` });
+    res.status(500).json({ success: false, message: `Error occurred while adding: ${error}` });
   }
 }
 
 async function getAllTestimonials(req, res) {
   try {
-    // TODO: add relations
     const collection = db.collection("testimonials"); 
-    const query = await collection.find();
-    res
-      .status(200)
-      .json({ success: true, message: "all testimonials", data: query });
+    const query = await collection.find().toArray();  
+
+    res.status(200).json({ success: true, message: "All testimonials", data: query });
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when getting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while getting testimonials: ${error}` });
   }
 }
 
 async function getByTestimonyNumber(req, res) {
   try {
-    // TODO: add relations
-    const collection = db.collection("testimonials"); 
-    const query = await collection.find({
-      testimonyNumber: req.params.testimonyNumber,
-    });
-    
-    if (query === null) {
+    const collection = db.collection("testimonials");
+    const query = await collection.find({ testimonyNumber: req.params.testimonyNumber }).toArray(); 
+
+    if (query.length === 0) {
       res.status(404).json({
         success: false,
-        message: `testimony ${req.params.testimonyNumber} not found`,
+        message: `Testimony with testimonyNumber ${req.params.testimonyNumber} not found`,
       });
     } else {
       res.status(200).json({
         success: true,
-        message: `testimony ${req.params.testimonyNumber} recovers`,
+        message: `Testimony with testimonyNumber ${req.params.testimonyNumber} found`,
         data: query,
       });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when getting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while getting testimony: ${error}` });
   }
 }
 
-async function upadeteTestimony(req, res) {
+async function updateTestimony(req, res) {  
   try {
-    const collection = db.collection("testimonials"); 
-    const search = await collection.find({
-      testimonyNumber: req.params.testimonyNumber,
-    });
+    const collection = db.collection("testimonials");
+    const search = await collection.find({ testimonyNumber: req.params.testimonyNumber }).toArray(); 
 
-    if (search === null) {
+    if (search.length === 0) {
       res.status(404).json({
         success: false,
-        message: `testimony ${req.params.testimonyNumber} not found`,
+        message: `Testimony with testimonyNumber ${req.params.testimonyNumber} not found`,
       });
     } else {
       await collection.updateOne(
@@ -96,52 +78,40 @@ async function upadeteTestimony(req, res) {
             date: req.body.date,
             content: req.body.content,
             individualNumber: req.body.individualNumber,
-            affairNumber: req.body.affairNumber
+            affairNumber: req.body.affairNumber,
           },
         }
       );
 
-      res.status(200).json({ success: true, message: "update an testimony" });
+      res.status(200).json({ success: true, message: "Updated the testimony" });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when updating: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while updating testimony: ${error}` });
   }
 }
 
 async function deleteByTestimonyNumber(req, res) {
   try {
-    const collection = db.collection("testimonials"); 
-    const search = await collection.find({
-      testimonyNumber: req.params.testimonyNumber,
-    });
+    const collection = db.collection("testimonials");
+    const search = await collection.find({ testimonyNumber: req.params.testimonyNumber }).toArray(); 
 
-    if (search === null) {
+    if (search.length === 0) {
       res.status(404).json({
         success: false,
-        message: `testimony ${req.params.testimonyNumber} not found`,
+        message: `Testimony with testimonyNumber ${req.params.testimonyNumber} not found`,
       });
     } else {
-      const query = await collection.deleteOne({
-        testimonyNumber: req.params.testimonyNumber,
-      });
+      const query = await collection.deleteOne({ testimonyNumber: req.params.testimonyNumber });
       res.status(200).json({
         success: true,
-        message: `testimony ${req.params.testimonyNumber} recovers`,
+        message: `Testimony with testimonyNumber ${req.params.testimonyNumber} deleted`,
         data: query,
       });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when deleting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while deleting testimony: ${error}` });
   }
 }
 
@@ -149,6 +119,6 @@ module.exports = {
   createTestimonials,
   getAllTestimonials,
   getByTestimonyNumber,
-  upadeteTestimony,
+  updateTestimony,
   deleteByTestimonyNumber,
 };

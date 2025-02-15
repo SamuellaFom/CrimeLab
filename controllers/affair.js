@@ -18,19 +18,16 @@ async function createAffairs(req, res) {
       placeNumber: req.body.placeNumber,
     });
 
-    res.status(200).json({ success: true, message: "Add a new affair" });
+    res.status(200).json({ success: true, message: "Added a new affair" });
   } catch (error) {
     console.log(error);
-
-    res
-      .status(500)
-      .json({ success: false, message: `Error present when adding: ${error}` });
+    res.status(500).json({ success: false, message: `Error occurred while adding: ${error}` });
   }
 }
 
 async function getAllAffairs(req, res) {
   try {
-    const collection = db.collection("affairs"); 
+    const collection = db.collection("affairs");
     const query = await collection.aggregate([
       {
         $lookup: {
@@ -48,7 +45,6 @@ async function getAllAffairs(req, res) {
           as: "testimonials",
         },
       },
-
       {
         $lookup: {
           from: "individuals",
@@ -59,86 +55,68 @@ async function getAllAffairs(req, res) {
       },
     ]).toArray();
 
-    res
-      .status(200)
-      .json({ success: true, message: "all affairs", data: query });
+    res.status(200).json({ success: true, message: "All affairs", data: query });
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when getting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while getting affairs: ${error}` });
   }
 }
 
 async function getByTitle(req, res) {
   try {
-    // TODO: add relations
-    const collection = db.collection("affairs"); 
-    const query = await collection.find({ title: req.params.title });
-    if (search === null) {
+    const collection = db.collection("affairs");
+    const query = await collection.find({ title: req.params.title }).toArray(); 
+
+    if (query.length === 0) {
       res.status(404).json({
         success: false,
-        message: `affair ${req.params.title} not found`,
+        message: `Affair ${req.params.title} not found`,
       });
     } else {
       res.status(200).json({
         success: true,
-        message: `affair ${req.params.title} recovers`,
+        message: `Affair ${req.params.title} found`,
         data: query,
       });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when getting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while getting affair: ${error}` });
   }
 }
 
 async function getByAffairNumber(req, res) {
   try {
-    // TODO: add relations
-    const collection = db.collection("affairs"); 
-    const query = await collection.find({
-      affairNumber: req.params.affairNumber,
-    });
-    if (search === null) {
+    const collection = db.collection("affairs");
+    const query = await collection.find({ affairNumber: req.params.affairNumber }).toArray(); 
+
+    if (query.length === 0) {
       res.status(404).json({
         success: false,
-        message: `affair ${req.params.affairNumber} not found`,
+        message: `Affair ${req.params.affairNumber} not found`,
       });
     } else {
       res.status(200).json({
         success: true,
-        message: `affair ${req.params.affairNumber} recovers`,
+        message: `Affair ${req.params.affairNumber} found`,
         data: query,
       });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when getting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while getting affair: ${error}` });
   }
 }
 
-async function upadeteAffair(req, res) {
+async function updateAffair(req, res) {  
   try {
-    const collection = db.collection("affairs"); 
-    const search = await collection.find({
-      affairNumber: req.params.affairNumber,
-    });
+    const collection = db.collection("affairs");
+    const search = await collection.find({ affairNumber: req.params.affairNumber }).toArray(); 
 
-    if (search === null) {
+    if (search.length === 0) {
       res.status(404).json({
         success: false,
-        message: `affair ${req.params.affairNumber} not found`,
+        message: `Affair ${req.params.affairNumber} not found`,
       });
     } else {
       await collection.updateOne(
@@ -153,47 +131,35 @@ async function upadeteAffair(req, res) {
         }
       );
 
-      res.status(200).json({ success: true, message: "update an affair" });
+      res.status(200).json({ success: true, message: "Updated the affair" });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when updating: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while updating affair: ${error}` });
   }
 }
 
 async function deleteByAffairNumber(req, res) {
   try {
-    const collection = db.collection("affairs"); 
-    const search = await collection.find({
-      affairNumber: req.params.affairNumber,
-    });
+    const collection = db.collection("affairs");
+    const search = await collection.find({ affairNumber: req.params.affairNumber }).toArray(); // Convert cursor to array
 
-    if (search === null) {
+    if (search.length === 0) {
       res.status(404).json({
         success: false,
-        message: `affair ${req.params.affairNumber} not found`,
+        message: `Affair ${req.params.affairNumber} not found`,
       });
     } else {
-      const query = await collection.deleteOne({
-        affairNumber: req.params.affairNumber,
-      });
+      const query = await collection.deleteOne({ affairNumber: req.params.affairNumber });
       res.status(200).json({
         success: true,
-        message: `affair ${req.params.affairNumber} recovers`,
+        message: `Affair ${req.params.affairNumber} deleted`,
         data: query,
       });
     }
   } catch (error) {
     console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: `Error present when deleting: ${error}`,
-    });
+    res.status(500).json({ success: false, message: `Error occurred while deleting affair: ${error}` });
   }
 }
 
@@ -202,6 +168,6 @@ module.exports = {
   getAllAffairs,
   getByTitle,
   getByAffairNumber,
-  upadeteAffair,
+  updateAffair,  
   deleteByAffairNumber,
 };
