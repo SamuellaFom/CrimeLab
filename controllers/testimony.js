@@ -14,6 +14,8 @@ async function createTestimonials(req, res) {
       testimonyNumber: uniqueId,
       date: req.body.date,
       content: req.body.content,
+      individualNumber: req.body.individualNumber,
+      affairNumber: req.body.affairNumber
     });
 
     res.status(200).json({ success: true, message: "Add a new testimony" });
@@ -29,7 +31,8 @@ async function createTestimonials(req, res) {
 async function getAllTestimonials(req, res) {
   try {
     // TODO: add relations
-    const query = await db.testimonials.find();
+    const collection = db.collection("testimonials"); 
+    const query = await collection.find();
     res
       .status(200)
       .json({ success: true, message: "all testimonials", data: query });
@@ -46,7 +49,8 @@ async function getAllTestimonials(req, res) {
 async function getByTestimonyNumber(req, res) {
   try {
     // TODO: add relations
-    const query = await db.testimonials.find({
+    const collection = db.collection("testimonials"); 
+    const query = await collection.find({
       testimonyNumber: req.params.testimonyNumber,
     });
     
@@ -74,7 +78,8 @@ async function getByTestimonyNumber(req, res) {
 
 async function upadeteTestimony(req, res) {
   try {
-    const search = await db.testimonials.find({
+    const collection = db.collection("testimonials"); 
+    const search = await collection.find({
       testimonyNumber: req.params.testimonyNumber,
     });
 
@@ -84,12 +89,14 @@ async function upadeteTestimony(req, res) {
         message: `testimony ${req.params.testimonyNumber} not found`,
       });
     } else {
-      await db.testimonials.updateOne(
+      await collection.updateOne(
         { testimonyNumber: req.params.testimonyNumber },
         {
           $set: {
             date: req.body.date,
             content: req.body.content,
+            individualNumber: req.body.individualNumber,
+            affairNumber: req.body.affairNumber
           },
         }
       );
@@ -108,7 +115,8 @@ async function upadeteTestimony(req, res) {
 
 async function deleteByTestimonyNumber(req, res) {
   try {
-    const search = await db.testimonials.find({
+    const collection = db.collection("testimonials"); 
+    const search = await collection.find({
       testimonyNumber: req.params.testimonyNumber,
     });
 
@@ -118,7 +126,7 @@ async function deleteByTestimonyNumber(req, res) {
         message: `testimony ${req.params.testimonyNumber} not found`,
       });
     } else {
-      const query = await db.testimonials.deleteOne({
+      const query = await collection.deleteOne({
         testimonyNumber: req.params.testimonyNumber,
       });
       res.status(200).json({

@@ -31,7 +31,8 @@ async function createIndividuals(req, res) {
 async function getAllIndividuals(req, res) {
   try {
     // TODO: add relations
-    const query = await db.individuals.find();
+    const collection = db.collection("individuals"); 
+    const query = await collection.find();
     res
       .status(200)
       .json({ success: true, message: "all individuals", data: query });
@@ -48,7 +49,8 @@ async function getAllIndividuals(req, res) {
 async function getByIndividualNumber(req, res) {
   try {
     // TODO: add relations
-    const query = await db.individuals.find({
+    const collection = db.collection("individuals"); 
+    const query = await collection.find({
       individualNumber: req.params.individualNumber,
     });
     if (query === null) {
@@ -75,7 +77,8 @@ async function getByIndividualNumber(req, res) {
 
 async function upadeteIndividual(req, res) {
   try {
-    const search = await db.individuals.find({
+    const collection = db.collection("individuals"); 
+    const search = await collection.find({
       individualNumber: req.params.individualNumber,
     });
 
@@ -85,7 +88,7 @@ async function upadeteIndividual(req, res) {
         message: `individual ${req.params.individualNumber} not found`,
       });
     } else {
-      await db.individuals.updateOne(
+      await collection.updateOne(
         { individualNumber: req.params.individualNumber },
         {
           $set: {
@@ -111,7 +114,8 @@ async function upadeteIndividual(req, res) {
 
 async function deleteByIndividualNumber(req, res) {
   try {
-    const search = await db.individuals.find({
+    const collection = db.collection("individuals"); 
+    const search = await collection.find({
       individualNumber: req.params.individualNumber,
     });
 
@@ -121,7 +125,7 @@ async function deleteByIndividualNumber(req, res) {
         message: `individual ${req.params.individualNumber} not found`,
       });
     } else {
-      const query = await db.individuals.deleteOne({
+      const query = await collection.deleteOne({
         individualNumber: req.params.individualNumber,
       });
       res.status(200).json({

@@ -5,9 +5,15 @@ const config = require(path.join(__dirname, "/../config/config.json"));
 
 const client = new MongoClient(config["mongo"].uri);
 
+
 async function connectMongo() {
-  await client.connect();
-  return client.db(config["mongo"].dbName);
+  try {
+    await client.connect();
+    return client.db(config["mongo"].dbName);
+  } catch (err) {
+    console.error("Failed to connect to MongoDB:", err);
+    throw err; // Re-throw to handle it in the calling function
+  }
 }
 
 const driver = neo4j.driver(

@@ -15,6 +15,7 @@ async function createAffairs(req, res) {
       title: req.body.title,
       description: req.body.description,
       statut: req.body.statut,
+      placeNumber: req.body.placeNumber,
     });
 
     res.status(200).json({ success: true, message: "Add a new affair" });
@@ -29,8 +30,35 @@ async function createAffairs(req, res) {
 
 async function getAllAffairs(req, res) {
   try {
-    // TODO: add relations
-    const query = await db.affairs.find();
+    const collection = db.collection("affairs"); 
+    const query = await collection.aggregate([
+      {
+        $lookup: {
+          from: "places",
+          localField: "placeNumber",
+          foreignField: "placeNumber",
+          as: "place",
+        },
+      },
+      {
+        $lookup: {
+          from: "testimonials",
+          localField: "affairNumber",
+          foreignField: "affairNumber",
+          as: "testimonials",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "individuals",
+          localField: "testimonials.individualNumber",
+          foreignField: "individualNumber",
+          as: "individuals",
+        },
+      },
+    ]).toArray();
+
     res
       .status(200)
       .json({ success: true, message: "all affairs", data: query });
@@ -47,7 +75,8 @@ async function getAllAffairs(req, res) {
 async function getByTitle(req, res) {
   try {
     // TODO: add relations
-    const query = await db.affairs.find({ title: req.params.title });
+    const collection = db.collection("affairs"); 
+    const query = await collection.find({ title: req.params.title });
     if (search === null) {
       res.status(404).json({
         success: false,
@@ -73,7 +102,8 @@ async function getByTitle(req, res) {
 async function getByAffairNumber(req, res) {
   try {
     // TODO: add relations
-    const query = await db.affairs.find({
+    const collection = db.collection("affairs"); 
+    const query = await collection.find({
       affairNumber: req.params.affairNumber,
     });
     if (search === null) {
@@ -100,7 +130,8 @@ async function getByAffairNumber(req, res) {
 
 async function upadeteAffair(req, res) {
   try {
-    const search = await db.affairs.find({
+    const collection = db.collection("affairs"); 
+    const search = await collection.find({
       affairNumber: req.params.affairNumber,
     });
 
@@ -110,13 +141,14 @@ async function upadeteAffair(req, res) {
         message: `affair ${req.params.affairNumber} not found`,
       });
     } else {
-      await db.affairs.updateOne(
+      await collection.updateOne(
         { affairNumber: req.params.affairNumber },
         {
           $set: {
             title: req.body.title,
             description: req.body.description,
             statut: req.body.statut,
+            placeNumber: req.body.placeNumber,
           },
         }
       );
@@ -135,7 +167,8 @@ async function upadeteAffair(req, res) {
 
 async function deleteByAffairNumber(req, res) {
   try {
-    const search = await db.affairs.find({
+    const collection = db.collection("affairs"); 
+    const search = await collection.find({
       affairNumber: req.params.affairNumber,
     });
 
@@ -145,7 +178,7 @@ async function deleteByAffairNumber(req, res) {
         message: `affair ${req.params.affairNumber} not found`,
       });
     } else {
-      const query = await db.affairs.deleteOne({
+      const query = await collection.deleteOne({
         affairNumber: req.params.affairNumber,
       });
       res.status(200).json({

@@ -39,4 +39,3 @@
 | **Fadette**    |                            |                                                 |
 | POST       | /create/fadette/            | To create a new fadette                        |
 | GET        | /getFadette/:id             | To return the searched fadette by ID           |
-

@@ -30,7 +30,8 @@ async function createPlaces(req, res) {
 async function getAllPlaces(req, res) {
   try {
     // TODO: add relations
-    const query = await db.places.find();
+    const collection = db.collection("places"); 
+    const query = await collection.find();
     res.status(200).json({ success: true, message: "all places", data: query });
   } catch (error) {
     console.log(error);
@@ -45,7 +46,8 @@ async function getAllPlaces(req, res) {
 async function getByAddress(req, res) {
   try {
     // TODO: add relations
-    const query = await db.places.find({ address: req.body.address });
+    const collection = db.collection("places"); 
+    const query = await collections.find({ address: req.body.address });
 
     if (query === null) {
       res.status(404).json({
@@ -72,7 +74,8 @@ async function getByAddress(req, res) {
 async function getByPlaceNumber(req, res) {
   try {
     // TODO: add relations
-    const query = await db.places.find({
+    const collection = db.collection("places"); 
+    const query = await collection.find({
       placeNumber: req.params.placeNumber,
     });
     if (query === null) {
@@ -99,7 +102,8 @@ async function getByPlaceNumber(req, res) {
 
 async function upadetePlace(req, res) {
   try {
-    const search = await db.places.find({
+    const collection = db.collection("places"); 
+    const search = await collection.find({
       placeNumber: req.params.placeNumber,
     });
 
@@ -109,7 +113,7 @@ async function upadetePlace(req, res) {
         message: `place ${req.params.placeNumber} not found`,
       });
     } else {
-      await db.places.updateOne(
+      await collection.updateOne(
         { placeNumber: req.params.placeNumber },
         {
           $set: {
@@ -134,7 +138,8 @@ async function upadetePlace(req, res) {
 
 async function deleteByPlaceNumber(req, res) {
   try {
-    const search = await db.places.find({
+    const collection = db.collection("places"); 
+    const search = await collection.find({
       placeNumber: req.params.placeNumber,
     });
 
@@ -144,7 +149,7 @@ async function deleteByPlaceNumber(req, res) {
         message: `place ${req.params.placeNumber} not found`,
       });
     } else {
-      const query = await db.places.deleteOne({
+      const query = await collection.deleteOne({
         placeNumber: req.params.placeNumber,
       });
       res.status(200).json({
