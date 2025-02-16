@@ -1,0 +1,256 @@
+{
+  "affairs": [
+    {
+      "affairNumber": "AFF2025001",
+      "title": "Cambriolage au musée",
+      "description": "Vol d'œuvres d'art au Louvre",
+      "statut": "Ouvert",
+      "placeNumber": "PLC1001",
+      "testimonials": ["TEST2001", "TEST2002"],
+      "individuals": ["IND3001", "IND3002"]
+    },
+    {
+      "affairNumber": "AFF2025002",
+      "title": "Vol à main armée",
+      "description": "Braquage d'une banque à Marseille",
+      "statut": "Clôturé",
+      "placeNumber": "PLC1002",
+      "testimonials": ["TEST2003"],
+      "individuals": ["IND3003", "IND3004"]
+    },
+    {
+      "affairNumber": "AFF2025003",
+      "title": "Fraude financière",
+      "description": "Escroquerie sur le marché boursier",
+      "statut": "En cours",
+      "placeNumber": "PLC1003",
+      "testimonials": ["TEST2004", "TEST2005"],
+      "individuals": ["IND3005", "IND3006"]
+    },
+    {
+      "affairNumber": "AFF2025004",
+      "title": "Atteinte à la sécurité",
+      "description": "Intrusion dans un bâtiment gouvernemental",
+      "statut": "Ouvert",
+      "placeNumber": "PLC1004",
+      "testimonials": ["TEST2006"],
+      "individuals": ["IND3007", "IND3008"]
+    },
+    {
+      "affairNumber": "AFF2025005",
+      "title": "Détournement de fonds",
+      "description": "Manipulation des comptes d'entreprise",
+      "statut": "Clôturé",
+      "placeNumber": "PLC1005",
+      "testimonials": ["TEST2007"],
+      "individuals": ["IND3009", "IND3010"]
+    }
+  ],
+  "individuals": [
+    {
+      "individualNumber": "IND3001",
+      "name": "Jean Dupont",
+      "kind": "Suspect",
+      "address": "10 Rue de la République, Paris",
+      "phone": "0612345678",
+      "affairs": ["AFF2025001"]
+    },
+    {
+      "individualNumber": "IND3002",
+      "name": "Marie Martin",
+      "kind": "Témoin",
+      "address": "20 Avenue de France, Lyon",
+      "phone": "0712345678",
+      "affairs": ["AFF2025001"]
+    },
+    {
+      "individualNumber": "IND3003",
+      "name": "Paul Bernard",
+      "kind": "Suspect",
+      "address": "15 Boulevard Saint-Germain, Marseille",
+      "phone": "0611122233",
+      "affairs": ["AFF2025002"]
+    },
+    {
+      "individualNumber": "IND3004",
+      "name": "Claire Durand",
+      "kind": "Victime",
+      "address": "25 Rue Victor Hugo, Marseille",
+      "phone": "0711122233",
+      "affairs": ["AFF2025002"]
+    },
+    {
+      "individualNumber": "IND3005",
+      "name": "Luc Moreau",
+      "kind": "Suspect",
+      "address": "30 Avenue de l'Europe, Lille",
+      "phone": "0612340000",
+      "affairs": ["AFF2025003"]
+    },
+    {
+      "individualNumber": "IND3006",
+      "name": "Sophie Renault",
+      "kind": "Témoin",
+      "address": "40 Rue de la Paix, Lille",
+      "phone": "0712340000",
+      "affairs": ["AFF2025003"]
+    },
+    {
+      "individualNumber": "IND3007",
+      "name": "Antoine Leroy",
+      "kind": "Suspect",
+      "address": "50 Rue de l'Industrie, Toulouse",
+      "phone": "0612349999",
+      "affairs": ["AFF2025004"]
+    },
+    {
+      "individualNumber": "IND3008",
+      "name": "Emma Dubois",
+      "kind": "Victime",
+      "address": "60 Boulevard de la Liberté, Toulouse",
+      "phone": "0712349999",
+      "affairs": ["AFF2025004"]
+    },
+    {
+      "individualNumber": "IND3009",
+      "name": "Julien Caron",
+      "kind": "Suspect",
+      "address": "70 Rue du Commerce, Bordeaux",
+      "phone": "0612356789",
+      "affairs": ["AFF2025005"]
+    },
+    {
+      "individualNumber": "IND3010",
+      "name": "Camille Roche",
+      "kind": "Témoin",
+      "address": "80 Avenue des Fleurs, Bordeaux",
+      "phone": "0712356789",
+      "affairs": ["AFF2025005"]
+    }
+  ],
+  "testimonials": [
+    {
+      "testimonyNumber": "TEST2001",
+      "date": "2025-01-01",
+      "content": "J'ai vu un individu suspect près du musée.",
+      "individualNumber": "IND3002",
+      "affairNumber": "AFF2025001"
+    },
+    {
+      "testimonyNumber": "TEST2002",
+      "date": "2025-01-02",
+      "content": "Le suspect portait un manteau noir.",
+      "individualNumber": "IND3002",
+      "affairNumber": "AFF2025001"
+    },
+    {
+      "testimonyNumber": "TEST2003",
+      "date": "2025-02-01",
+      "content": "J'ai vu des hommes armés braquer la banque.",
+      "individualNumber": "IND3003",
+      "affairNumber": "AFF2025002"
+    },
+    {
+      "testimonyNumber": "TEST2004",
+      "date": "2025-03-01",
+      "content": "Des transactions suspectes ont été détectées.",
+      "individualNumber": "IND3005",
+      "affairNumber": "AFF2025003"
+    },
+    {
+      "testimonyNumber": "TEST2005",
+      "date": "2025-03-02",
+      "content": "Des virements financiers douteux ont été effectués.",
+      "individualNumber": "IND3006",
+      "affairNumber": "AFF2025003"
+    },
+    {
+      "testimonyNumber": "TEST2006",
+      "date": "2025-04-01",
+      "content": "Une intrusion a été repérée dans le bâtiment gouvernemental.",
+      "individualNumber": "IND3007",
+      "affairNumber": "AFF2025004"
+    },
+    {
+      "testimonyNumber": "TEST2007",
+      "date": "2025-05-01",
+      "content": "Des fonds importants ont disparu.",
+      "individualNumber": "IND3009",
+      "affairNumber": "AFF2025005"
+    }
+  ],
+  "places": [
+    {
+      "placeNumber": "PLC1001",
+      "address": "12 Avenue des Champs, Paris",
+      "description": "Musée du Louvre",
+      "kind": "Public",
+      "affairs": ["AFF2025001"]
+    },
+    {
+      "placeNumber": "PLC1002",
+      "address": "5 Rue de la République, Marseille",
+      "description": "Banque de Marseille",
+      "kind": "Commerce",
+      "affairs": ["AFF2025002"]
+    },
+    {
+      "placeNumber": "PLC1003",
+      "address": "30 Rue du Marché, Lille",
+      "description": "Siège d'une entreprise",
+      "kind": "Commercial",
+      "affairs": ["AFF2025003"]
+    },
+    {
+      "placeNumber": "PLC1004",
+      "address": "45 Boulevard des Fêtes, Toulouse",
+      "description": "Bâtiment gouvernemental",
+      "kind": "Institutionnel",
+      "affairs": ["AFF2025004"]
+    },
+    {
+      "placeNumber": "PLC1005",
+      "address": "80 Rue des Vignes, Bordeaux",
+      "description": "Siège social d'une entreprise",
+      "kind": "Commercial",
+      "affairs": ["AFF2025005"]
+    }
+  ],
+  "fadettes": [
+    {
+      "phoneNumber": "0612345678",
+      "callDate": "2025-01-01",
+      "callDuration": 120,
+      "receiverPhoneNumber": "0709876543",
+      "callType": "Entrant"
+    },
+    {
+      "phoneNumber": "0712345678",
+      "callDate": "2025-01-02",
+      "callDuration": 180,
+      "receiverPhoneNumber": "0709876543",
+      "callType": "Sortant"
+    },
+    {
+      "phoneNumber": "0611122233",
+      "callDate": "2025-02-01",
+      "callDuration": 240,
+      "receiverPhoneNumber": "0701122334",
+      "callType": "SMS"
+    },
+    {
+      "phoneNumber": "0711122233",
+      "callDate": "2025-02-01",
+      "callDuration": 90,
+      "receiverPhoneNumber": "0701122334",
+      "callType": "Entrant"
+    },
+    {
+      "phoneNumber": "0612349999",
+      "callDate": "2025-03-01",
+      "callDuration": 300,
+      "receiverPhoneNumber": "0709988776",
+      "callType": "Sortant"
+    }
+  ]
+}
