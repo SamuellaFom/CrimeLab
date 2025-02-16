@@ -59,25 +59,39 @@ async function getByAddress(req, res) {
 async function getByPlaceNumber(req, res) {
   try {
     const collection = db.collection("places");
-    const query = await collection.find({ placeNumber: req.params.placeNumber }).toArray();  
+    const query = await collection.aggregate([
+      { $match: { placeNumber: req.params.placeNumber } },
+      {
+        $lookup: {
+          from: "affairs",             // collection à joindre
+          localField: "affairs",        // champ dans la collection "places" (qui contient les références)
+          foreignField: "affairNumber", // champ correspondant dans "affairs"
+          as: "affairDetails"           // nouveau champ qui contiendra les détails des affaires
+        }
+      }
+    ]).toArray();
 
     if (query.length === 0) {
       res.status(404).json({
         success: false,
-        message: `Place with placeNumber ${req.params.placeNumber} not found`,
+        message: `Place with placeNumber ${req.params.placeNumber} not found`
       });
     } else {
       res.status(200).json({
         success: true,
         message: `Place with placeNumber ${req.params.placeNumber} found`,
-        data: query,
+        data: query
       });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: `Error occurred while getting place: ${error}` });
+    res.status(500).json({
+      success: false,
+      message: `Error occurred while getting place: ${error}`
+    });
   }
 }
+
 
 async function updatePlace(req, res) {  
   try {

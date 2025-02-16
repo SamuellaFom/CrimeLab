@@ -27,8 +27,17 @@ async function createIndividuals(req, res) {
 
 async function getAllIndividuals(req, res) {
   try {
-    const collection = db.collection("individuals"); 
-    const query = await collection.find().toArray();  
+    const collection = db.collection("individuals");
+    const query = await collection.aggregate([
+      {
+        $lookup: {
+          from: "affairs",
+          localField: "affairs",
+          foreignField: "affairNumber",
+          as: "affairDetails"
+        }
+      }
+    ]).toArray();
 
     res.status(200).json({ success: true, message: "All individuals", data: query });
   } catch (error) {
@@ -37,10 +46,23 @@ async function getAllIndividuals(req, res) {
   }
 }
 
+
 async function getByIndividualNumber(req, res) {
   try {
-    const collection = db.collection("individuals"); 
-    const query = await collection.find({ individualNumber: req.params.individualNumber }).toArray();  
+    const collection = db.collection("individuals");
+    const query = await collection.aggregate([
+      {
+        $match: { individualNumber: req.params.individualNumber }  // Filtrer par numéro d'individu
+      },
+      {
+        $lookup: {
+          from: "affairs",
+          localField: "affairs",
+          foreignField: "affairNumber",
+          as: "affairDetails"
+        }
+      }
+    ]).toArray();
 
     if (query.length === 0) {
       res.status(404).json({
@@ -59,6 +81,7 @@ async function getByIndividualNumber(req, res) {
     res.status(500).json({ success: false, message: `Error occurred while getting individual: ${error}` });
   }
 }
+
 
 async function updateIndividual(req, res) {  
   try {

@@ -21,22 +21,6 @@ async function createAffairs(req, res) {
     });
 
 
-    const session = await connectNeo4j();
-
-    await session.run(
-        `
-      MERGE (a:Affair {affairNumber: $affairNumber, title: $title, description: $description, statut: $statut})
-      MERGE (p:Place {placeNumber: $placeNumber})
-      MERGE (a)-[:OCCURRED_AT]->(p)
-      `,
-        {
-          affairNumber: uniqueId,
-          title: req.body.title,
-          description: req.body.description,
-          statut: req.body.statut,
-          placeNumber: req.body.placeNumber,
-        }
-    );
 
 
 

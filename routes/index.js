@@ -11,7 +11,7 @@ var fadetteController = require("../controllers/fadette");
 router.post("/create/affair", affairController.createAffairs);
 router.get("/allAffairs", affairController.getAllAffairs);
 router.get("/getAffair/:title", affairController.getByTitle);
-router.get("/getAffair/:affairNumber", affairController.getByAffairNumber);
+router.get("/getAffairByNumber/:affairNumber", affairController.getByAffairNumber);
 router.put("/update/affair/:affairNumber", affairController.updateAffair);
 router.delete("/delete/affair/:affairNumber", affairController.deleteByAffairNumber);
 

@@ -40,7 +40,28 @@ async function getAllTestimonials(req, res) {
 async function getByTestimonyNumber(req, res) {
   try {
     const collection = db.collection("testimonials");
-    const query = await collection.find({ testimonyNumber: req.params.testimonyNumber }).toArray(); 
+    const query = await collection.aggregate([
+      {$match: {testimonyNumber: req.params.testimonyNumber}},
+
+      {
+        $lookup: {
+          from: "individuals",
+          localField: "individualNumber",
+          foreignField: "individualNumber",
+          as: "individualDetails",
+        }
+      },
+
+      {
+        $lookup: {
+          from: "affairs",
+          localField: "affairNumber",
+          foreignField: "affairNumber",
+          as: "affairDetails",
+        }
+      }
+
+    ]).toArray();
 
     if (query.length === 0) {
       res.status(404).json({
