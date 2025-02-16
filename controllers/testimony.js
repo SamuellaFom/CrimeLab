@@ -18,7 +18,7 @@ async function createTestimonials(req, res) {
       affairNumber: req.body.affairNumber,
     });
 
-    res.status(200).json({ success: true, message: "Added a new testimony" });
+    res.status(200).json({ success: true, message: "Added a new testimony", testimonyNumber: uniqueId });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: `Error occurred while adding: ${error}` });

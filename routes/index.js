@@ -10,7 +10,6 @@ var fadetteController = require("../controllers/fadette");
 // router affair
 router.post("/create/affair", affairController.createAffairs);
 router.get("/allAffairs", affairController.getAllAffairs);
-//router.get("/getAffair/:title", affairController.getByTitle);
 router.get("/getAffair/:affairNumber", affairController.getByAffairNumber);
 router.put("/update/affair/:affairNumber", affairController.updateAffair);
 router.delete("/delete/affair/:affairNumber", affairController.deleteByAffairNumber);
@@ -18,14 +17,13 @@ router.delete("/delete/affair/:affairNumber", affairController.deleteByAffairNum
 // router individual
 router.post("/create/individual", individualController.createIndividuals);
 router.get("/allIndividuals", individualController.getAllIndividuals);
-router.get("getIndividual/:individualNumber", individualController.getByIndividualNumber);
+router.get("/getIndividual/:individualNumber", individualController.getByIndividualNumber);
 router.put("/update/individual/:individualNumber", individualController.updateIndividual);
 router.delete("/delete/individual/:individualNumber", individualController.deleteByIndividualNumber);
 
 // router place
 router.post("/create/place", placeController.createPlaces);
 router.get("/allPlaces", placeController.getAllPlaces);
-//router.get("/getPlace/:address", placeController.getByAddress);
 router.get("/getPlace/:placeNumber", placeController.getByPlaceNumber);
 router.put("/update/place/:placaNumber", placeController.updatePlace);
 router.delete("/delete/place/:placeNumber", placeController.deleteByPlaceNumber);

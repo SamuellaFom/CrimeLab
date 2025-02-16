@@ -17,7 +17,7 @@ async function createPlaces(req, res) {
       kind: req.body.kind,
     });
 
-    res.status(200).json({ success: true, message: "Added a new place" });
+    res.status(200).json({ success: true, message: "Added a new place", placeNumber: uniqueId });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: `Error occurred while adding: ${error}` });
@@ -33,26 +33,6 @@ async function getAllPlaces(req, res) {
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: `Error occurred while getting places: ${error}` });
-  }
-}
-
-async function getByAddress(req, res) {
-  try {
-    const collection = db.collection("places");
-    const query = await collection.find({ address: req.body.address }).toArray(); 
-
-    if (query.length === 0) {
-      res.status(404).json({ success: false, message: `Place with address ${req.body.address} not found` });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: `Place with address ${req.body.address} found`,
-        data: query,
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: `Error occurred while getting place: ${error}` });
   }
 }
 
@@ -136,7 +116,6 @@ async function deleteByPlaceNumber(req, res) {
 module.exports = {
   createPlaces,
   getAllPlaces,
-  getByAddress,
   getByPlaceNumber,
   updatePlace, 
   deleteByPlaceNumber,

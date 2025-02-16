@@ -18,7 +18,9 @@ async function createAffairs(req, res) {
       placeNumber: req.body.placeNumber,
     });
 
-    res.status(200).json({ success: true, message: "Added a new affair", data: query});
+    res
+      .status(200)
+      .json({ success: true, message: "Added a new affair", affairNumber: uniqueId });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -68,61 +70,6 @@ async function getAllAffairs(req, res) {
     res.status(500).json({
       success: false,
       message: `Error occurred while getting affairs: ${error}`,
-    });
-  }
-}
-
-async function getByTitle(req, res) {
-  try {
-    const collection = db.collection("affairs");
-    const query = await collection
-      .aggregate([
-        {
-          $match: { title: req.params.title },
-        },
-        {
-          $lookup: {
-            from: "places",
-            localField: "placeNumber",
-            foreignField: "placeNumber",
-            as: "place",
-          },
-        },
-        {
-          $lookup: {
-            from: "testimonials",
-            localField: "affairNumber",
-            foreignField: "affairNumber",
-            as: "testimonials",
-          },
-        },
-        {
-          $lookup: {
-            from: "individuals",
-            localField: "testimonials.individualNumber",
-            foreignField: "individualNumber",
-            as: "individuals",
-          },
-        },
-      ])
-      .toArray();
-    if (query.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: `Affair ${req.params.title} not found`,
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: `Affair ${req.params.title} found`,
-        data: query,
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: `Error occurred while getting affair: ${error}`,
     });
   }
 }
@@ -224,7 +171,7 @@ async function deleteByAffairNumber(req, res) {
     const collection = db.collection("affairs");
     const search = await collection
       .find({ affairNumber: req.params.affairNumber })
-      .toArray(); // Convert cursor to array
+      .toArray();
 
     if (search.length === 0) {
       res.status(404).json({
@@ -253,7 +200,6 @@ async function deleteByAffairNumber(req, res) {
 module.exports = {
   createAffairs,
   getAllAffairs,
-  getByTitle,
   getByAffairNumber,
   updateAffair,
   deleteByAffairNumber,
