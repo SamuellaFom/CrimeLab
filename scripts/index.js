@@ -23,7 +23,7 @@ async function convertToJson(path, name) {
 }
 
 async function sendToDb() {
-  const data = convertToJson("./files/2024_t2_sites_metropoles_bis.xlsx", "Metropole");
+  const data = await convertToJson("./files/2024_t2_sites_metropoles_bis.xlsx", "Metropole");
 
   try {
     for (const currentItem of data.Metropole) {
