@@ -31,7 +31,7 @@ router.delete("/delete/place/:placeNumber", placeController.deleteByPlaceNumber)
 // router testimony
 router.post("/create/testimony", testimonyController.createTestimonials);
 router.get("/allTestimonies", testimonyController.getAllTestimonials);
-router.get("/getTestimony/:testimonyNumber", testimonyController.getByTestimonyNumber);
+router.get("/getTestimony/:testimonyNumber", testimonyController.getTestimonyByAffairNumber);
 router.put("/update/testimony/:testimonyNumber", testimonyController.updateTestimony);
 router.delete("/delete/testimony/:testimonyNumber", testimonyController.deleteByTestimonyNumber);
 

@@ -37,10 +37,10 @@ async function getAllTestimonials(req, res) {
   }
 }
 
-async function getByTestimonyNumber(req, res) {
+async function getTestimonyByAffairNumber(req, res) {
   try {
     const collection = db.collection("testimonials");
-    const query = await collection.find({ testimonyNumber: req.params.testimonyNumber }).toArray(); 
+    const query = await collection.find({ affairNumber: req.params.affairNumber }).toArray(); 
 
     if (query.length === 0) {
       res.status(404).json({
@@ -118,7 +118,7 @@ async function deleteByTestimonyNumber(req, res) {
 module.exports = {
   createTestimonials,
   getAllTestimonials,
-  getByTestimonyNumber,
+  getTestimonyByAffairNumber,
   updateTestimony,
   deleteByTestimonyNumber,
 };
