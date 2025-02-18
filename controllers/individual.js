@@ -184,8 +184,6 @@ async function deleteByIndividualNumber(req, res) {
   }
 }
 
-<<<<<<< Updated upstream
-=======
 
 async function getCompleteIndividualInfo(req, res) {
   try {
@@ -233,7 +231,7 @@ async function getCompleteIndividualInfo(req, res) {
   }
 }
 
-// deuxième cas pour scénarios individual
+// test 
 async function getIndividualsMultipleAffairs(req, res) {
   try {
    
@@ -279,11 +277,12 @@ async function getIndividualsMultipleAffairs(req, res) {
 
 
 
->>>>>>> Stashed changes
 module.exports = {
   createIndividuals,
   getAllIndividuals,
   getByIndividualNumber,
   updateIndividual,
   deleteByIndividualNumber,
+  getCompleteIndividualInfo,
+  getIndividualsMultipleAffairs 
 };

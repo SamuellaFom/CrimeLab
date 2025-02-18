@@ -16,6 +16,8 @@ async function createAffairs(req, res) {
       description: req.body.description,
       statut: req.body.statut,
       placeNumber: req.body.placeNumber,
+      createdAt: new Date(),  // Ajout de la date de création
+      type: req.body.type // Ajout du champ "type" pour définir le type d'affaire
     });
 
     res
@@ -197,10 +199,68 @@ async function deleteByAffairNumber(req, res) {
   }
 }
 
+
+async function getOldUnresolvedAffairs(req, res) {
+  try {
+    // Définir la date limite : 6 mois avant aujourd'hui
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const collection = db.collection("affairs");
+    // Supposons que le statut "résolu" indique une affaire clos, donc les autres valeurs représentent une affaire non résolue.
+    const query = await collection.find({
+      statut: { $ne: "résolu" },
+      createdAt: { $lte: sixMonthsAgo }
+    }).toArray();
+
+    res.status(200).json({
+      success: true,
+      message: "Affaires non résolues depuis plus de 6 mois",
+      data: query
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: `Erreur lors de la récupération des affaires non résolues : ${error}`
+    });
+  }
+}
+
+async function countAffairsByType(req, res) {
+  try {
+    const collection = db.collection("affairs");
+    const results = await collection.aggregate([
+      {
+        $group: {
+          _id: "$type",  // regroupe par type d'affaire
+          count: { $sum: 1 }  // compte le nombre d'affaires pour chaque type
+        }
+      }
+    ]).toArray();
+
+    res.status(200).json({
+      success: true,
+      message: "Nombre d'affaires par type",
+      data: results
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: `Error occurred while counting affairs by type: ${error}`,
+    });
+  }
+}
+
+
+
 module.exports = {
   createAffairs,
   getAllAffairs,
   getByAffairNumber,
   updateAffair,
   deleteByAffairNumber,
+  getOldUnresolvedAffairs,
+  countAffairsByType
 };
