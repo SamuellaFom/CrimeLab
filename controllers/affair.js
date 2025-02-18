@@ -16,7 +16,8 @@ async function createAffairs(req, res) {
       description: req.body.description,
       statut: req.body.statut,
       placeNumber: req.body.placeNumber,
-      createdAt: new Date()  // Ajout de la date de création
+      createdAt: new Date(),  // Ajout de la date de création
+      type: req.body.type // Ajout du champ "type" pour définir le type d'affaire
     });
 
     res
@@ -226,6 +227,33 @@ async function getOldUnresolvedAffairs(req, res) {
   }
 }
 
+async function countAffairsByType(req, res) {
+  try {
+    const collection = db.collection("affairs");
+    const results = await collection.aggregate([
+      {
+        $group: {
+          _id: "$type",  // regroupe par type d'affaire
+          count: { $sum: 1 }  // compte le nombre d'affaires pour chaque type
+        }
+      }
+    ]).toArray();
+
+    res.status(200).json({
+      success: true,
+      message: "Nombre d'affaires par type",
+      data: results
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: `Error occurred while counting affairs by type: ${error}`,
+    });
+  }
+}
+
+
 
 module.exports = {
   createAffairs,
@@ -233,5 +261,6 @@ module.exports = {
   getByAffairNumber,
   updateAffair,
   deleteByAffairNumber,
-  getOldUnresolvedAffairs 
+  getOldUnresolvedAffairs,
+  countAffairsByType
 };
