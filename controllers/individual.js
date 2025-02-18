@@ -184,10 +184,59 @@ async function deleteByIndividualNumber(req, res) {
   }
 }
 
+
+async function getCompleteIndividualInfo(req, res) {
+  try {
+    const collection = db.collection("individuals");
+    const data = await collection.aggregate([
+      {
+        $match: { individualNumber: req.params.individualNumber }
+      },
+      {
+        $lookup: {
+          from: "testimonials",
+          localField: "individualNumber",
+          foreignField: "individualNumber",
+          as: "testimonials"
+        }
+      },
+      {
+        $lookup: {
+          from: "affairs",
+          localField: "testimonials.affairNumber",
+          foreignField: "affairNumber",
+          as: "affairs"
+        }
+      }
+    ]).toArray();
+
+    if (data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Individual ${req.params.individualNumber} not found`
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Complete information for individual ${req.params.individualNumber}`,
+      data: data[0]  // On retourne l'objet individuel complet
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: `Error occurred while fetching individual info: ${error}`
+    });
+  }
+}
+
+
 module.exports = {
   createIndividuals,
   getAllIndividuals,
   getByIndividualNumber,
   updateIndividual,
   deleteByIndividualNumber,
+  getCompleteIndividualInfo
 };
