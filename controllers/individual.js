@@ -184,6 +184,102 @@ async function deleteByIndividualNumber(req, res) {
   }
 }
 
+<<<<<<< Updated upstream
+=======
+
+async function getCompleteIndividualInfo(req, res) {
+  try {
+    const collection = db.collection("individuals");
+    const data = await collection.aggregate([
+      {
+        $match: { individualNumber: req.params.individualNumber }
+      },
+      {
+        $lookup: {
+          from: "testimonials",
+          localField: "individualNumber",
+          foreignField: "individualNumber",
+          as: "testimonials"
+        }
+      },
+      {
+        $lookup: {
+          from: "affairs",
+          localField: "testimonials.affairNumber",
+          foreignField: "affairNumber",
+          as: "affairs"
+        }
+      }
+    ]).toArray();
+
+    if (data.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Individual ${req.params.individualNumber} not found`
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Complete information for individual ${req.params.individualNumber}`,
+      data: data[0] 
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: `Error occurred while fetching individual info: ${error}`
+    });
+  }
+}
+
+// deuxième cas pour scénarios individual
+async function getIndividualsMultipleAffairs(req, res) {
+  try {
+   
+    const aggregationResult = await db.collection("testimonials").aggregate([
+      {
+        $group: {
+          _id: "$individualNumber",
+          affairNumbers: { $addToSet: "$affairNumber" }
+        }
+      },
+      {
+        $project: {
+          individualNumber: "$_id",
+          affairCount: { $size: "$affairNumbers" }
+        }
+      },
+      {
+        $match: {
+          affairCount: { $gt: 1 }
+        }
+      }
+    ]).toArray();
+
+    const individualNumbers = aggregationResult.map(item => item.individualNumber);
+
+    const individuals = await db.collection("individuals").find({
+      individualNumber: { $in: individualNumbers }
+    }).toArray();
+
+    res.status(200).json({
+      success: true,
+      message: "Individus ayant participé à plus d'une affaire",
+      data: individuals
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des individus:", error);
+    res.status(500).json({
+      success: false,
+      message: `Erreur lors de la récupération des individus: ${error}`
+    });
+  }
+}
+
+
+
+>>>>>>> Stashed changes
 module.exports = {
   createIndividuals,
   getAllIndividuals,
