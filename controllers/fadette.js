@@ -199,7 +199,7 @@ async function getIndividualFadettesAndAffairs(req, res) {
         ])
         .toArray();
 
-    /** 4️⃣ Retourner la réponse combinée */
+    /** Retourner la réponse combinée */
     res.status(200).json({
       success: true,
       individualPhone: phoneNumber,
