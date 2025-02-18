@@ -6,11 +6,27 @@ var placeController = require("../controllers/place");
 var testimonyController = require("../controllers/testimony");
 var fadetteController = require("../controllers/fadette");
 
+console.log("affairController:", affairController);
+console.log("individualController:", individualController);
+console.log("placeController:", placeController);
+console.log("testimonyController:", testimonyController);
+console.log("fadetteController:", fadetteController);
+
+
+
+
+
+
+// Vérifie que ces contrôleurs ne sont pas undefined
+if (!fadetteController || !affairController) {
+    console.error("Erreur : Un des contrôleurs est introuvable.");
+}
+
 
 // router affair
 router.post("/create/affair", affairController.createAffairs);
 router.get("/allAffairs", affairController.getAllAffairs);
-router.get("/getAffair/:title", affairController.getByTitle);
+//router.get("/getAffair/:title", affairController.getByTitle);
 router.get("/getAffairByNumber/:affairNumber", affairController.getByAffairNumber);
 router.put("/update/affair/:affairNumber", affairController.updateAffair);
 router.delete("/delete/affair/:affairNumber", affairController.deleteByAffairNumber);
@@ -39,5 +55,8 @@ router.delete("/delete/testimony/:testimonyNumber", testimonyController.deleteBy
 
 // router fadette
 router.post("/create/fadette", fadetteController.createFadette);
+router.get("/getFadetteByPhone/:phoneNumber", fadetteController.getFadetteByPhone);
+router.get("/getFadettesBySiteAndTime", fadetteController.getFadettesBySiteAndTime);
+router.get("/getIndividualFadettesAndAffairs/:phoneNumber", fadetteController.getIndividualFadettesAndAffairs);
 
 module.exports = router;

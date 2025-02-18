@@ -86,4 +86,151 @@ async function createFadette(req, res) {
   }
 }
 
-module.exports = { createFadette };
+
+
+
+async function getFadettesBySiteAndTime(req, res) {
+  try {
+    const { site, startDate, endDate, startHour, endHour } = req.query;
+
+
+    const query = `
+      MATCH (f:Fadette)-[:TRANSITED_BY]->(s:Site {num_site: $site})
+      WHERE f.date >= $startDate AND f.date <= $endDate
+        AND f.heure >= $startHour AND f.heure <= $endHour
+      OPTIONAL MATCH (f)-[:EMITTED_BY|RECEIVED_BY]->(i:Individual)
+      RETURN f, s, collect(DISTINCT i) as individuals
+    `;
+
+    // Exécution de la requête
+    const result = await dbNeo4j.dbNeo4j.run(query, { site, startDate, endDate, startHour, endHour });
+
+    // Transformation du résultat en un format JSON
+    const data = result.records.map(record => {
+      const fadette = record.get("f").properties;
+      const siteNode = record.get("s").properties;
+      const individuals = record.get("individuals")?.map(ind => ind.properties) || [];
+      return {
+        fadette,
+        site: siteNode,
+        individuals
+      };
+    });
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error("Error retrieving fadettes by site and time:", error);
+    res.status(500).json({ success: false, message: `Error: ${error}` });
+  }
+}
+
+
+
+
+
+
+
+
+
+async function getFadetteByPhone(req, res) {
+  try {
+    const phoneNumber = req.params.phoneNumber;
+    const query = `
+    MATCH (f:Fadette)-[r:EMITTED_BY|RECEIVED_BY]->(i:Individual {phone: $phoneNumber})
+    RETURN f, i
+    `;
+
+    const result = await dbNeo4j.dbNeo4j.run(query, { phoneNumber });
+
+    // Transforme le résultat en JSON
+    const data = result.records.map(record => ({
+      fadette: record.get("f").properties,
+      individual: record.get("i").properties
+    }));
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error("Error retrieving fadettes by phone:", error);
+    res.status(500).json({ success: false, message: `Error: ${error}` });
+  }
+
+
+}
+
+
+const connectMongo = require("../config/database");
+
+async function getIndividualFadettesAndAffairs(req, res) {
+  try {
+    const phoneNumber = req.params.phoneNumber;
+
+    const queryNeo4j = `
+      MATCH (f:Fadette)-[:EMITTED_BY|RECEIVED_BY]->(i:Individual {phone: $phoneNumber})
+      RETURN f, i
+    `;
+    const resultNeo4j = await dbNeo4j.dbNeo4j.run(queryNeo4j, { phoneNumber });
+
+    const fadettes = resultNeo4j.records.map(record => ({
+      fadette: record.get("f").properties,
+      individual: record.get("i").properties
+    }));
+
+    const db = await connectMongo.connectMongo();
+
+    if (!db) {
+      console.error("Erreur : MongoDB non connecté !");
+      return res.status(500).json({ success: false, message: "MongoDB non connecté !" });
+    }
+
+    const collection = db.collection("affairs");
+    const affairs = await collection
+        .aggregate([
+          {
+            $lookup: {
+              from: "testimonials",
+              localField: "affairNumber",
+              foreignField: "affairNumber",
+              as: "testimonials"
+            }
+          },
+          {
+            $match: { "testimonials.individualNumber": phoneNumber }
+          }
+        ])
+        .toArray();
+
+    /** 4️⃣ Retourner la réponse combinée */
+    res.status(200).json({
+      success: true,
+      individualPhone: phoneNumber,
+      fadettes,
+      affairs
+    });
+
+  } catch (error) {
+    console.error("Erreur récupération des données :", error);
+    res.status(500).json({ success: false, message: `Erreur : ${error}` });
+  }
+}
+
+module.exports = { getIndividualFadettesAndAffairs };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = { createFadette, getFadetteByPhone, getFadettesBySiteAndTime, getIndividualFadettesAndAffairs };
