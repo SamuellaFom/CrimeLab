@@ -220,7 +220,7 @@ async function getCompleteIndividualInfo(req, res) {
     res.status(200).json({
       success: true,
       message: `Complete information for individual ${req.params.individualNumber}`,
-      data: data[0]  // On retourne l'objet individuel complet
+      data: data[0] 
     });
   } catch (error) {
     console.error(error);
@@ -232,11 +232,57 @@ async function getCompleteIndividualInfo(req, res) {
 }
 
 
+async function getIndividualsMultipleAffairs(req, res) {
+  try {
+   
+    const aggregationResult = await db.collection("testimonials").aggregate([
+      {
+        $group: {
+          _id: "$individualNumber",
+          affairNumbers: { $addToSet: "$affairNumber" }
+        }
+      },
+      {
+        $project: {
+          individualNumber: "$_id",
+          affairCount: { $size: "$affairNumbers" }
+        }
+      },
+      {
+        $match: {
+          affairCount: { $gt: 1 }
+        }
+      }
+    ]).toArray();
+
+    const individualNumbers = aggregationResult.map(item => item.individualNumber);
+
+    const individuals = await db.collection("individuals").find({
+      individualNumber: { $in: individualNumbers }
+    }).toArray();
+
+    res.status(200).json({
+      success: true,
+      message: "Individus ayant participé à plus d'une affaire",
+      data: individuals
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des individus:", error);
+    res.status(500).json({
+      success: false,
+      message: `Erreur lors de la récupération des individus: ${error}`
+    });
+  }
+}
+
+
+
 module.exports = {
   createIndividuals,
   getAllIndividuals,
   getByIndividualNumber,
   updateIndividual,
   deleteByIndividualNumber,
-  getCompleteIndividualInfo
+  getCompleteIndividualInfo,
+  getIndividualsMultipleAffairs 
 };
