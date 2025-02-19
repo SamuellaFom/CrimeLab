@@ -24,7 +24,7 @@ router.get("/allIndividuals", individualController.getAllIndividuals);
 router.get("/individual", individualController.getIndividualsMultipleAffairs);
 router.get(
   "/getIndividual/:individualNumber",
-  individualController.getByIndividualNumber
+  individualController.getCompleteIndividualInfo
 );
 router.put(
   "/update/individual/:individualNumber",

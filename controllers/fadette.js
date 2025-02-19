@@ -222,7 +222,6 @@ async function getIndividualFadettesAndAffairs(req, res) {
             as: "testimonials",
           },
         },
-        { $unwind: "$testimonials" },
         {
           $lookup: {
             from: "affairs",
@@ -238,8 +237,8 @@ async function getIndividualFadettesAndAffairs(req, res) {
       success: true,
       data: {
         individualPhone: phoneNumber,
-        fadettes,
-        affairs,
+        fadettes: fadettes,
+        othersData: affairs,
       },
     });
   } catch (error) {

@@ -81,59 +81,6 @@ async function getAllIndividuals(req, res) {
 }
 
 /**
- * The function getByIndividualNumber retrieves information about an individual based on their
- * individual number, including testimonials and related affairs.
- */
-async function getByIndividualNumber(req, res) {
-  try {
-    const collection = db.collection("individuals");
-    const query = await collection
-      .aggregate([
-        {
-          $match: { individualNumber: req.params.individualNumber },
-        },
-        {
-          $lookup: {
-            from: "testimonials",
-            localField: "individualNumber",
-            foreignField: "individualNumber",
-            as: "testimonials",
-          },
-        },
-        { $unwind: "$testimonials" },
-        {
-          $lookup: {
-            from: "affairs",
-            localField: "testimonials.affairNumber",
-            foreignField: "affairNumber",
-            as: "affairs",
-          },
-        },
-      ])
-      .toArray();
-
-    if (query.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: `Individual ${req.params.individualNumber} not found`,
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: `Individual ${req.params.individualNumber} found`,
-        data: query,
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: `Error occurred while getting individual: ${error}`,
-    });
-  }
-}
-
-/**
  * The function `updateIndividual` updates information of an individual in a collection based on the
  * individual number provided in the request parameters.
  */
@@ -319,7 +266,6 @@ async function getIndividualsMultipleAffairs(req, res) {
 module.exports = {
   createIndividuals,
   getAllIndividuals,
-  getByIndividualNumber,
   updateIndividual,
   deleteByIndividualNumber,
   getCompleteIndividualInfo,

@@ -24,13 +24,11 @@ async function createAffairs(req, res) {
       type: req.body.type,
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Added a new affair",
-        affairNumber: uniqueId,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Added a new affair",
+      affairNumber: uniqueId,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -268,8 +266,11 @@ async function countAffairsByType(req, res) {
         {
           $group: {
             _id: "$type",
-            count: { $sum: 1 },
+            total: { $sum: 1 },
           },
+        },
+        {
+          $sort: { total: -1 },
         },
       ])
       .toArray();
