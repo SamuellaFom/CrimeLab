@@ -49,7 +49,7 @@ router.delete(
 router.post("/create/testimony", testimonyController.createTestimonials);
 router.get("/allTestimonies", testimonyController.getAllTestimonials);
 router.get(
-  "/getTestimony/:testimonyNumber",
+  "/getTestimony/:affairNumber",
   testimonyController.getTestimonyByAffairNumber
 );
 router.put(

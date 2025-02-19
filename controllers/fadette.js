@@ -204,16 +204,15 @@ async function getIndividualFadettesAndAffairs(req, res) {
     `;
     const resultNeo4j = await dbNeo4j.dbNeo4j.run(queryNeo4j, { phoneNumber });
 
-    const fadettes = resultNeo4j.records.map((record) => ({
-      fadette: record.get("f").properties,
-      individual: record.get("i").properties,
-    }));
+    const fadettes = resultNeo4j.records.map(
+      (record) => record.get("f").properties
+    );
 
     const collection = db.collection("individuals");
     const affairs = await collection
       .aggregate([
         {
-          $match: { individualNumber: phoneNumber },
+          $match: { phone: phoneNumber },
         },
         {
           $lookup: {
@@ -237,9 +236,11 @@ async function getIndividualFadettesAndAffairs(req, res) {
 
     res.status(200).json({
       success: true,
-      individualPhone: phoneNumber,
-      fadettes,
-      affairs,
+      data: {
+        individualPhone: phoneNumber,
+        fadettes,
+        affairs,
+      },
     });
   } catch (error) {
     console.error("Erreur récupération des données :", error);
