@@ -6,6 +6,10 @@ let db;
   db = await connectMongo.connectMongo();
 })();
 
+/**
+ * The function `createAffairs` creates a new affair entry in a database collection with unique ID and
+ * specified details, and returns a success message with the generated affair number.
+ */
 async function createAffairs(req, res) {
   try {
     const uniqueId = ID.generate(new Date().toJSON());
@@ -16,13 +20,17 @@ async function createAffairs(req, res) {
       description: req.body.description,
       statut: req.body.statut,
       placeNumber: req.body.placeNumber,
-      createdAt: new Date(),  // Ajout de la date de création
-      type: req.body.type // Ajout du champ "type" pour définir le type d'affaire
+      createdAt: new Date(),
+      type: req.body.type,
     });
 
     res
       .status(200)
-      .json({ success: true, message: "Added a new affair", affairNumber: uniqueId });
+      .json({
+        success: true,
+        message: "Added a new affair",
+        affairNumber: uniqueId,
+      });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -32,6 +40,10 @@ async function createAffairs(req, res) {
   }
 }
 
+/**
+ * The function `getAllAffairs` retrieves all affairs from a database, including related information
+ * from other collections, and returns the data in a JSON response.
+ */
 async function getAllAffairs(req, res) {
   try {
     const collection = db.collection("affairs");
@@ -76,6 +88,11 @@ async function getAllAffairs(req, res) {
   }
 }
 
+/**
+ * The function `getByAffairNumber` retrieves affair data based on the affair number, including
+ * related information from other collections, and returns a response with the data if found or an
+ * error message if not found.
+ */
 async function getByAffairNumber(req, res) {
   try {
     const collection = db.collection("affairs");
@@ -132,6 +149,10 @@ async function getByAffairNumber(req, res) {
   }
 }
 
+/**
+ * The function `updateAffair` updates an affair in a collection based on the provided affair number
+ * and request body data.
+ */
 async function updateAffair(req, res) {
   try {
     const collection = db.collection("affairs");
@@ -168,6 +189,10 @@ async function updateAffair(req, res) {
   }
 }
 
+/**
+ * The function `deleteByAffairNumber` deletes an affair from a collection based on the affair number
+ * provided in the request parameters and returns a success message or an error message accordingly.
+ */
 async function deleteByAffairNumber(req, res) {
   try {
     const collection = db.collection("affairs");
@@ -199,50 +224,60 @@ async function deleteByAffairNumber(req, res) {
   }
 }
 
-
+/**
+ * This function retrieves unresolved affairs that are older than six months and sends them as a
+ * response in a JSON format.
+ */
 async function getOldUnresolvedAffairs(req, res) {
   try {
-    // Définir la date limite : 6 mois avant aujourd'hui
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
     const collection = db.collection("affairs");
-    // Supposons que le statut "résolu" indique une affaire clos, donc les autres valeurs représentent une affaire non résolue.
-    const query = await collection.find({
-      statut: { $ne: "résolu" },
-      createdAt: { $lte: sixMonthsAgo }
-    }).toArray();
+
+    const query = await collection
+      .find({
+        statut: { $ne: "résolu" },
+        createdAt: { $lte: sixMonthsAgo },
+      })
+      .toArray();
 
     res.status(200).json({
       success: true,
       message: "Affaires non résolues depuis plus de 6 mois",
-      data: query
+      data: query,
     });
   } catch (error) {
     console.log(error);
     res.status(500).json({
       success: false,
-      message: `Erreur lors de la récupération des affaires non résolues : ${error}`
+      message: `Erreur lors de la récupération des affaires non résolues : ${error}`,
     });
   }
 }
 
+/**
+ * The function `countAffairsByType` retrieves the count of affairs grouped by type from a MongoDB
+ * collection and sends the results as a JSON response.
+ */
 async function countAffairsByType(req, res) {
   try {
     const collection = db.collection("affairs");
-    const results = await collection.aggregate([
-      {
-        $group: {
-          _id: "$type",  // regroupe par type d'affaire
-          count: { $sum: 1 }  // compte le nombre d'affaires pour chaque type
-        }
-      }
-    ]).toArray();
+    const results = await collection
+      .aggregate([
+        {
+          $group: {
+            _id: "$type",
+            count: { $sum: 1 },
+          },
+        },
+      ])
+      .toArray();
 
     res.status(200).json({
       success: true,
       message: "Nombre d'affaires par type",
-      data: results
+      data: results,
     });
   } catch (error) {
     console.log(error);
@@ -253,8 +288,6 @@ async function countAffairsByType(req, res) {
   }
 }
 
-
-
 module.exports = {
   createAffairs,
   getAllAffairs,
@@ -262,5 +295,5 @@ module.exports = {
   updateAffair,
   deleteByAffairNumber,
   getOldUnresolvedAffairs,
-  countAffairsByType
+  countAffairsByType,
 };

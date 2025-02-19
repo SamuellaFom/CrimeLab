@@ -7,6 +7,10 @@ let db;
   db = await connectMongo.connectMongo();
 })();
 
+/**
+ * The function `createIndividuals` inserts a new individual into both a MongoDB collection and a Neo4j
+ * graph database.
+ */
 async function createIndividuals(req, res) {
   try {
     const uniqueId = ID.generate(new Date().toJSON());
@@ -39,7 +43,13 @@ async function createIndividuals(req, res) {
       console.error("Error running Neo4j query", err);
     }
 
-    res.status(200).json({ success: true, message: "Added a new individual", individualNumber: uniqueId });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Added a new individual",
+        individualNumber: uniqueId,
+      });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -49,6 +59,10 @@ async function createIndividuals(req, res) {
   }
 }
 
+/**
+ * The function `getAllIndividuals` retrieves all individuals from a collection in a database and sends
+ * a response with the data or an error message.
+ */
 async function getAllIndividuals(req, res) {
   try {
     const collection = db.collection("individuals");
@@ -66,6 +80,10 @@ async function getAllIndividuals(req, res) {
   }
 }
 
+/**
+ * The function getByIndividualNumber retrieves information about an individual based on their
+ * individual number, including testimonials and related affairs.
+ */
 async function getByIndividualNumber(req, res) {
   try {
     const collection = db.collection("individuals");
@@ -115,6 +133,10 @@ async function getByIndividualNumber(req, res) {
   }
 }
 
+/**
+ * The function `updateIndividual` updates information of an individual in a collection based on the
+ * individual number provided in the request parameters.
+ */
 async function updateIndividual(req, res) {
   try {
     const collection = db.collection("individuals");
@@ -153,6 +175,10 @@ async function updateIndividual(req, res) {
   }
 }
 
+/**
+ * The function `deleteByIndividualNumber` deletes an individual from a collection based on their
+ * individual number and returns a success message or an error message.
+ */
 async function deleteByIndividualNumber(req, res) {
   try {
     const collection = db.collection("individuals");
@@ -184,98 +210,111 @@ async function deleteByIndividualNumber(req, res) {
   }
 }
 
-
+/**
+ * The function `getCompleteIndividualInfo` retrieves complete information for a specific individual
+ * including testimonials and affairs from a database collection.
+ */
 async function getCompleteIndividualInfo(req, res) {
   try {
     const collection = db.collection("individuals");
-    const data = await collection.aggregate([
-      {
-        $match: { individualNumber: req.params.individualNumber }
-      },
-      {
-        $lookup: {
-          from: "testimonials",
-          localField: "individualNumber",
-          foreignField: "individualNumber",
-          as: "testimonials"
-        }
-      },
-      {
-        $lookup: {
-          from: "affairs",
-          localField: "testimonials.affairNumber",
-          foreignField: "affairNumber",
-          as: "affairs"
-        }
-      }
-    ]).toArray();
+    const data = await collection
+      .aggregate([
+        {
+          $match: { individualNumber: req.params.individualNumber },
+        },
+        {
+          $lookup: {
+            from: "testimonials",
+            localField: "individualNumber",
+            foreignField: "individualNumber",
+            as: "testimonials",
+          },
+        },
+        {
+          $lookup: {
+            from: "affairs",
+            localField: "testimonials.affairNumber",
+            foreignField: "affairNumber",
+            as: "affairs",
+          },
+        },
+      ])
+      .toArray();
 
     if (data.length === 0) {
       return res.status(404).json({
         success: false,
-        message: `Individual ${req.params.individualNumber} not found`
+        message: `Individual ${req.params.individualNumber} not found`,
       });
     }
 
     res.status(200).json({
       success: true,
       message: `Complete information for individual ${req.params.individualNumber}`,
-      data: data[0] 
+      data: data[0],
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: `Error occurred while fetching individual info: ${error}`
+      message: `Error occurred while fetching individual info: ${error}`,
     });
   }
 }
 
-// test 
+/**
+ * The function `getIndividualsMultipleAffairs` retrieves individuals who have participated in more
+ * than one affair from a MongoDB database and returns them as a JSON response.
+ */
 async function getIndividualsMultipleAffairs(req, res) {
   try {
-   
-    const aggregationResult = await db.collection("testimonials").aggregate([
-      {
-        $group: {
-          _id: "$individualNumber",
-          affairNumbers: { $addToSet: "$affairNumber" }
-        }
-      },
-      {
-        $project: {
-          individualNumber: "$_id",
-          affairCount: { $size: "$affairNumbers" }
-        }
-      },
-      {
-        $match: {
-          affairCount: { $gt: 1 }
-        }
-      }
-    ]).toArray();
+    const aggregationResult = await db
+      .collection("testimonials")
+      .aggregate([
+        {
+          $group: {
+            _id: "$individualNumber",
+            affairNumbers: { $addToSet: "$affairNumber" },
+          },
+        },
+        {
+          $project: {
+            individualNumber: "$_id",
+            affairCount: { $size: "$affairNumbers" },
+          },
+        },
+        {
+          $match: {
+            affairCount: { $gt: 1 },
+          },
+        },
+      ])
+      .toArray();
 
-    const individualNumbers = aggregationResult.map(item => item.individualNumber);
+    const individualNumbers = aggregationResult.map(
+      (item) => item.individualNumber
+    );
 
-    const individuals = await db.collection("individuals").find({
-      individualNumber: { $in: individualNumbers }
-    }).toArray();
+    const individuals = await db
+      .collection("individuals")
+      .find({
+        individualNumber: { $in: individualNumbers },
+      })
+      .toArray();
 
     res.status(200).json({
       success: true,
       message: "Individus ayant participé à plus d'une affaire",
-      data: individuals
+      data: individuals,
     });
   } catch (error) {
     console.error("Erreur lors de la récupération des individus:", error);
     res.status(500).json({
       success: false,
-      message: `Erreur lors de la récupération des individus: ${error}`
+      message: `Erreur lors de la récupération des individus: ${error}`,
     });
   }
 }
-
-
 
 module.exports = {
   createIndividuals,
@@ -284,5 +323,5 @@ module.exports = {
   updateIndividual,
   deleteByIndividualNumber,
   getCompleteIndividualInfo,
-  getIndividualsMultipleAffairs 
+  getIndividualsMultipleAffairs,
 };

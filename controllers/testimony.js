@@ -6,6 +6,10 @@ let db;
   db = await connectMongo.connectMongo();
 })();
 
+/**
+ * The function `createTestimonials` asynchronously adds a new testimonial to a database collection
+ * with error handling.
+ */
 async function createTestimonials(req, res) {
   try {
     const uniqueId = ID.generate(new Date().toJSON());
@@ -18,29 +22,58 @@ async function createTestimonials(req, res) {
       affairNumber: req.body.affairNumber,
     });
 
-    res.status(200).json({ success: true, message: "Added a new testimony", testimonyNumber: uniqueId });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Added a new testimony",
+        testimonyNumber: uniqueId,
+      });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: `Error occurred while adding: ${error}` });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: `Error occurred while adding: ${error}`,
+      });
   }
 }
 
+/**
+ * The function getAllTestimonials retrieves all testimonials from a collection and sends them as a
+ * JSON response with appropriate status codes.
+ */
 async function getAllTestimonials(req, res) {
   try {
-    const collection = db.collection("testimonials"); 
-    const query = await collection.find().toArray();  
+    const collection = db.collection("testimonials");
+    const query = await collection.find().toArray();
 
-    res.status(200).json({ success: true, message: "All testimonials", data: query });
+    res
+      .status(200)
+      .json({ success: true, message: "All testimonials", data: query });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: `Error occurred while getting testimonials: ${error}` });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: `Error occurred while getting testimonials: ${error}`,
+      });
   }
 }
 
+/**
+ * The function `getTestimonyByAffairNumber` retrieves a testimony from a collection based on the
+ * affair number provided in the request parameters and returns a response with the retrieved data or
+ * an error message.
+ */
 async function getTestimonyByAffairNumber(req, res) {
   try {
     const collection = db.collection("testimonials");
-    const query = await collection.find({ affairNumber: req.params.affairNumber }).toArray(); 
+    const query = await collection
+      .find({ affairNumber: req.params.affairNumber })
+      .toArray();
 
     if (query.length === 0) {
       res.status(404).json({
@@ -56,14 +89,25 @@ async function getTestimonyByAffairNumber(req, res) {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: `Error occurred while getting testimony: ${error}` });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: `Error occurred while getting testimony: ${error}`,
+      });
   }
 }
 
-async function updateTestimony(req, res) {  
+/**
+ * The function `updateTestimony` updates a testimony in a collection based on the testimony number
+ * provided in the request parameters.
+ */
+async function updateTestimony(req, res) {
   try {
     const collection = db.collection("testimonials");
-    const search = await collection.find({ testimonyNumber: req.params.testimonyNumber }).toArray(); 
+    const search = await collection
+      .find({ testimonyNumber: req.params.testimonyNumber })
+      .toArray();
 
     if (search.length === 0) {
       res.status(404).json({
@@ -87,14 +131,25 @@ async function updateTestimony(req, res) {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: `Error occurred while updating testimony: ${error}` });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: `Error occurred while updating testimony: ${error}`,
+      });
   }
 }
 
+/**
+ * The function `deleteByTestimonyNumber` deletes a testimonial from a collection based on the provided
+ * testimony number.
+ */
 async function deleteByTestimonyNumber(req, res) {
   try {
     const collection = db.collection("testimonials");
-    const search = await collection.find({ testimonyNumber: req.params.testimonyNumber }).toArray(); 
+    const search = await collection
+      .find({ testimonyNumber: req.params.testimonyNumber })
+      .toArray();
 
     if (search.length === 0) {
       res.status(404).json({
@@ -102,7 +157,9 @@ async function deleteByTestimonyNumber(req, res) {
         message: `Testimony with testimonyNumber ${req.params.testimonyNumber} not found`,
       });
     } else {
-      const query = await collection.deleteOne({ testimonyNumber: req.params.testimonyNumber });
+      const query = await collection.deleteOne({
+        testimonyNumber: req.params.testimonyNumber,
+      });
       res.status(200).json({
         success: true,
         message: `Testimony with testimonyNumber ${req.params.testimonyNumber} deleted`,
@@ -111,7 +168,12 @@ async function deleteByTestimonyNumber(req, res) {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: `Error occurred while deleting testimony: ${error}` });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: `Error occurred while deleting testimony: ${error}`,
+      });
   }
 }
 
